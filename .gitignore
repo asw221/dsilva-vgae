@@ -1,0 +1,17 @@
+
+## Ignore temporaries
+**/*~
+
+## Ignore Mac specific files
+**/.DS_Store
+
+## Output, data directory contents
+out/*
+data/*
+
+## Ignore virtual environment cache
+.venv
+
+
+## Ignore any .Rhistory-ies
+**/.Rhistory

@@ -1,0 +1,11 @@
+
+# --- Core data analysis ---
+numpy~=2.4.0
+pandas~=3.0.0
+scikit-learn~=1.8.0
+scipy~=1.17.0
+torch~=2.11.0
+torch_geometric~=2.8.0
+
+# --- Testing ---
+# pytest
