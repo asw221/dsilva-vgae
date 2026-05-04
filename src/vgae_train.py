@@ -84,8 +84,8 @@ CONFIG = dict(
 
     # Graphs with more nodes than this are trained with batch_size=1
     # automatically regardless of the setting below.
-    large_graph_threshold = 2_000_000  # 350_000,
-    batch_size            = 1,         # for small/medium graphs
+    large_graph_threshold = 2_000_000,  # 350_000,
+    batch_size            = 1,          # for small/medium graphs
 
     # Where to save outputs
     output_dir   = "out",
