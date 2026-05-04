@@ -66,7 +66,7 @@ CONFIG = dict(
     categorical_columns = [],
 
     # Number of nearest neighbours per node when building the graph
-    k = 12,
+    k = 8,
 
     # Graphs with more nodes than this trigger a warning (not an error).
     # Set to None to disable.
@@ -84,11 +84,13 @@ CONFIG = dict(
 
     # Graphs with more nodes than this are trained with batch_size=1
     # automatically regardless of the setting below.
-    large_graph_threshold = 350_000,
-    batch_size            = 4,         # for small/medium graphs
+    large_graph_threshold = 2_000_000  # 350_000,
+    batch_size            = 1,         # for small/medium graphs
 
-    # Where to save the trained model
-    output_model = "out/vgae_model_1.pt",
+    # Where to save outputs
+    output_dir   = "out",
+    output_model = "vgae_model_1.pt",
+    loss_history_file = "loss_history.csv"
 )
 
 
@@ -373,7 +375,7 @@ def train_vgae(graph_paths, cfg, device = torch.device("cpu")):
         avg_loss = float(np.mean(epoch_losses))
         train_losses.append((epoch, avg_loss))
 
-        if epoch % 20 == 0:
+        if epoch % 10 == 0:
             print(f"Epoch {epoch:>4}  avg_loss={avg_loss:.4f}")
 
     return model.cpu(), train_losses
@@ -401,6 +403,44 @@ def generate_graph(model, num_nodes, latent_dim, threshold=0.5, device="cpu"):
     adj = (adj > threshold).astype(float)
     np.fill_diagonal(adj, 0)
     return adj
+
+def save_loss_history(train_losses, cfg):
+    """
+    Save per-epoch average loss to a CSV file
+    Output columsn: epoch, avg_loss
+    File location : <output_dir>/<loss_history_file>
+    """
+    out_dir = Path(cfg["output_dir"])
+    out_dir.mkdir( parents = True, exist_ok = True )
+    out_path = outdir / cfg["loss_history_file"]
+    df = pd.DataFrame(train_losses, columns = ["epoch", "avg_loss"])
+    df.to_csv(out_path, index = False)
+    print(f"Loss history saved -> {out_path}  ({len(df)}) rows")
+
+
+def export_all_embeddings(model, graph_paths, cfg):
+    """
+    Generate and save embeddings for every graph as a CSV file
+    Each CSV contains one row per node with columns:
+      z_0, z_1, ..., z_{latent_dim-1}
+
+    Files are written to <output_dir>/embeddings/<graph_stem>.csv
+    Graphs already in _graph_cache are reused; others are loaded
+    from disk.
+    """
+    out_dir = Path(cfg["output_dir"]) / "embeddings"
+    out_dir.mkdir( parents = True, exist_ok = True )
+
+    model.eval()
+    cols = [ f"z_{i}" for i in range(cfg["latent_dim"]) ]
+    for path in graph_paths:
+        graph = _graph_cache.get(path.name) or file_to_pyg(path, cfg)
+
+        Z = get_embeddings(model, graph)  # [N, latent_dim]
+        out_path = out_dir / f"{path.stem}.csv"
+        pd.DataFrame(Z, colums = cols).to_csv(out_path, index = False)
+        print(f"  Embeddings -> {out_path}  shape={Z.shape}")
+
 
 
 # -------------------------------------------------------------------
@@ -437,6 +477,10 @@ if __name__ == "__main__":
 
     torch.save(model.state_dict(), cfg["output_model"])
     print(f"\nModel saved -> {cfg['output_model']}")
+
+    print("\nSaving loss history and exporting graph embeddings")
+    save_loss_history(losses, cfg)
+    export_all_embeddings(model, graph_paths, cfg)
 
     # Sanity check: embeddings for the first graph
     print("\nGenerating embeddings for first graph ...")
