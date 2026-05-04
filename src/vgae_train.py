@@ -290,7 +290,7 @@ class VGAEEncoder(torch.nn.Module):
 _graph_cache: dict = {}
 
 
-def train_vgae(graph_paths, cfg):
+def train_vgae(graph_paths, cfg, device = torch.device("cpu")):
     """
     Train VGAE across all discovered graphs.
 
@@ -302,7 +302,7 @@ def train_vgae(graph_paths, cfg):
         model       : trained VGAE (moved to CPU)
         train_losses: list of (epoch, avg_loss) tuples
     """
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    ## device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"\nDevice: {device}  |  {len(graph_paths)} graphs\n")
 
     # Peek at first file to get feature dimension without caching it yet
