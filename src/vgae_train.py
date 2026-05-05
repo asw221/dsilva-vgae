@@ -77,7 +77,7 @@ CONFIG = dict(
     latent_dim      = 32,
 
     # Training
-    epochs          = 200,
+    epochs          = 500,
     lr              = 1e-3,
     val_fraction    = 0.05,
     test_fraction   = 0.05,
