@@ -412,7 +412,7 @@ def save_loss_history(train_losses, cfg):
     """
     out_dir = Path(cfg["output_dir"])
     out_dir.mkdir( parents = True, exist_ok = True )
-    out_path = outdir / cfg["loss_history_file"]
+    out_path = out_dir / cfg["loss_history_file"]
     df = pd.DataFrame(train_losses, columns = ["epoch", "avg_loss"])
     df.to_csv(out_path, index = False)
     print(f"Loss history saved -> {out_path}  ({len(df)}) rows")
