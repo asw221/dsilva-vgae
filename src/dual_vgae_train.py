@@ -309,7 +309,7 @@ class FeatureDecoder(nn.Module):
  
     Reconstructing node features from the latent embedding tests whether
     the encoder has compressed feature information into z, not just graph
-    structure.  A high R² on a feature means z encodes it well; a low R²
+    structure.  A high R^2 on a feature means z encodes it well; a low R^2
     means z discards it (possibly because it is unrelated to graph topology).
     """
     def __init__(self, latent_dim, hidden_dim, out_dim):
@@ -479,7 +479,13 @@ def train_vgae(graph_paths, cfg, device = torch.device("cpu")):
         train_losses.append(row)
 
         if epoch % 10 == 0:
-            print(f"Epoch {epoch:>4}  avg_loss={avg_loss:.4f}")
+            print(
+                f"Epoch {epoch:>4}  "
+                f"Loss={row[1]:.4f}    "
+                f"(edge={row[2]:.4f}, "
+                f"feat={row[3]:.4f}, "
+                f"KL={row[3]:.4f})"
+            )
 
     return model.cpu(), train_losses
 
