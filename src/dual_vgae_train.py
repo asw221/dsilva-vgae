@@ -79,7 +79,7 @@ CONFIG = dict(
 
     # Training
     epochs          = 500,
-    lr              = 1e-3,
+    lr              = 5e-3,
     val_fraction    = 0.05,
     test_fraction   = 0.05,
 
@@ -89,7 +89,7 @@ CONFIG = dict(
     #   alpha : weight on edge (adjacency) reconstruction BCE loss
     #   beta  : weight on feature reconstruction MSE loss
     #   gamma : weight on KL divergence term
-    loss_alpha = 1.0,
+    loss_alpha = 0.67,
     loss_beta  = 1.0,
     loss_gamma = 1.0,
     # The three weights alpha, beta, gamma are important to tune.
@@ -484,7 +484,7 @@ def train_vgae(graph_paths, cfg, device = torch.device("cpu")):
                 f"Loss={row[1]:.4f}    "
                 f"(edge={row[2]:.4f}, "
                 f"feat={row[3]:.4f}, "
-                f"KL={row[3]:.4f})"
+                f"KL={row[4]:.4f})"
             )
 
     return model.cpu(), train_losses
@@ -608,7 +608,7 @@ def export_all_embeddings(model, graph_paths, cfg):
 
         Z = get_embeddings(model, graph)  # [N, latent_dim]
         out_path = out_dir / f"{path.stem}.csv"
-        pd.DataFrame(Z, colums = cols).to_csv(out_path, index = False)
+        pd.DataFrame(Z, columns = cols).to_csv(out_path, index = False)
         print(f"  Embeddings -> {out_path}  shape={Z.shape}")
 
 
