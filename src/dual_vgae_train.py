@@ -78,7 +78,7 @@ CONFIG = dict(
     latent_dim      = 32,
 
     # Training
-    epochs          = 500,
+    epochs          = 1000,
     lr              = 5e-3,
     val_fraction    = 0.05,
     test_fraction   = 0.05,
@@ -91,7 +91,7 @@ CONFIG = dict(
     #   gamma : weight on KL divergence term
     loss_alpha = 0.67,
     loss_beta  = 1.0,
-    loss_gamma = 1.0,
+    loss_gamma = 435.0,
     # The three weights alpha, beta, gamma are important to tune.
     # If MSE dominates (feature values are large), the model will
     # sacrifice edge structure to fit features, and vice versa. A good
