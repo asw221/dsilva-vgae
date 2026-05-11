@@ -515,7 +515,7 @@ def generate_graph(model, num_nodes, latent_dim, threshold=0.5, device="cpu"):
 
 
 @torch.no_grad()
-def evaluate_feature_reconstruction(model, data):
+def evaluate_feature_reconstruction(model, data, cfg):
     out_dir = Path( cfg["output_dir"] )
     out_dir.mkdir( parents = True, exist_ok = True )
     out_path = out_dir / "feature_reconstruction.csv"
