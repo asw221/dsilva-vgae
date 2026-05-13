@@ -78,8 +78,8 @@ CONFIG = dict(
     latent_dim      = 32,
 
     # Training
-    epochs          = 1000,
-    lr              = 5e-3,
+    epochs          = 10,
+    lr              = 1e-2,
     val_fraction    = 0.05,
     test_fraction   = 0.05,
 
@@ -91,7 +91,7 @@ CONFIG = dict(
     #   gamma : weight on KL divergence term
     loss_alpha = 0.67,
     loss_beta  = 1.0,
-    loss_gamma = 435.0,
+    loss_gamma = 1900.0,
     # The three weights alpha, beta, gamma are important to tune.
     # If MSE dominates (feature values are large), the model will
     # sacrifice edge structure to fit features, and vice versa. A good
@@ -528,7 +528,7 @@ def evaluate_feature_reconstruction(model, data, cfg):
         graph = graph.to("cpu")
 
         z     = model.encode(graph.x, graph.edge_index)
-        x_hat = modelfeature_decoder(z).numpy()
+        x_hat = model.feature_decoder(z).numpy()
         x     = graph.x.numpy()
 
         n_features = x.shape[1]
