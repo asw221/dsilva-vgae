@@ -1,6 +1,8 @@
 
 ## Ignore temporaries
 **/*~
+**/*.log
+**/*.aux
 
 ## Ignore Mac specific files
 **/.DS_Store

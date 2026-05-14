@@ -78,7 +78,7 @@ CONFIG = dict(
     latent_dim      = 32,
 
     # Training
-    epochs          = 10,
+    epochs          = 1200,
     lr              = 1e-2,
     val_fraction    = 0.05,
     test_fraction   = 0.05,
@@ -484,7 +484,7 @@ def train_vgae(graph_paths, cfg, device = torch.device("cpu")):
                 f"Loss={row[1]:.4f}    "
                 f"(edge={row[2]:.4f}, "
                 f"feat={row[3]:.4f}, "
-                f"KL={row[4]:.4f})"
+                f"KL={row[4]:.6f})"
             )
 
     return model.cpu(), train_losses

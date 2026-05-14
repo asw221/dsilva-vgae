@@ -6,6 +6,7 @@ autoencoder}
 \date{}
 
 \usepackage{amsmath, amssymb}
+\usepackage{float}
 \usepackage[margin=2.5cm]{geometry}
 
 
@@ -93,7 +94,7 @@ MLP feature decoder.
 The encoder is a two-layer graph convolutional network implementing
 the Kipf \& Welling (2017) spectral graph convolution (GCNConv). It
 maps the pair (X, edge\_index) to a per-node posterior distribution
-over a latent space of dimension d.
+over a latent space of dimension $d$.
 
 \subsubsection{Layer 1--Shared representation (conv\_shared)}
 %% -------------------------------------------------------------------
@@ -123,10 +124,10 @@ creates a Y-shaped split:
 \item conv\_mu: produces $\mu \in \mathbb{R}^{N \times d}$, the mean
 of the posterior distribution $q(Z | X, A)$ for each node.
 
-\item conv\_logstd: produces $log \sigma \in \mathbb{R}^{N \times d}$,
-the log standard deviation. Parameterising $log \sigma$ rather than
+\item conv\_logstd: produces $\log \sigma \in \mathbb{R}^{N \times d}$,
+the log standard deviation. Parameterising $\log \sigma$ rather than
 $\sigma$ directly ensures positivity without constrained optimisation,
-since $\sigma = \exp(log \sigma)$ is always positive.
+since $\sigma = \exp(\log \sigma)$ is always positive.
 \end{itemize}
 
 These two layers each perform a second round of neighbourhood
@@ -140,11 +141,11 @@ distance two in the graph.
 
 A latent embedding $z_i$ is sampled for each node using the
 reparameterisation trick:
-\[ z_i = \mu_i + \sigma_i \epsilon, \qquad, \epsilon \sim N(0, I). \]
+\[ z_i = \mu_i + \sigma_i \epsilon, \qquad \epsilon \sim N(0, I). \]
 This allows gradients to flow through the sampling operation during
-backpropagation: the randomness is isolated in ε, which has no learned
-parameters. The result is a matrix $Z \in \mathbb{R}^{N \times d}$ of
-per-node latent embeddings.
+backpropagation: the randomness is isolated in $\epsilon$, which has
+no learned parameters. The result is a matrix $Z \in \mathbb{R}^{N
+\times d}$ of per-node latent embeddings.
 
 At inference time (get\_embeddings), only $\mu$ is returned---the
 deterministic mean embedding---rather than a stochastic sample,
@@ -154,7 +155,7 @@ clustering.
 \subsubsection{Parameter count}
 %% -------------------------------------------------------------------
 
-\begin{table}
+\begin{table}[H]
 \centering
 \begin{tabular}{ r p{0.5\textwidth} }
 conv\_shared & $W: [F \times H] + \text{bias}$: $[H] \to F H + H$ parameters \\
@@ -222,8 +223,8 @@ training edge split (positive edges) and an equal number of
 randomly sampled negative edges:
 \[
 L_{\text{edge}} = -\frac{1}{\lvert E_{\text{train}} \rvert}
-\sum_{i, j \in E_{\text{train}}} A_{ij} log \hat{A}_{ij} +
-(1 - A_{ij}) log\big( 1 - \hat{A}_{ij} \big)
+\sum_{i, j \in E_{\text{train}}} A_{ij} \log \hat{A}_{ij} +
+(1 - A_{ij}) \log\big( 1 - \hat{A}_{ij} \big)
 \]
 This is the standard VGAE reconstruction loss. Minimising it
 encourages the encoder to place nodes that are connected in the graph
@@ -251,7 +252,7 @@ $q(Z \mid X, A)$ and the standard normal prior $p(Z) = N(0, I)$,
 normalised per node:
 \begin{align*}
 L_{\text{KL}}
-&= \frac{1}{N} \mathcal{D}\big\{ q(Z \mid X, A) \Vert N(0, I) \big\}
+&= \frac{1}{N} \mathcal{D}\big\{ q(Z \mid X, A) ~\Vert~ N(0, I) \big\}
 \\
 &= \frac{1}{2 N} \sum_i \sum_j ( \mu_{ij}^2 + \sigma_{ij}^2 - 2 \log
 \sigma_{ij} - 1 )
@@ -392,12 +393,15 @@ output $\hat{x}$:
 \begin{tabular}{ r c p{0.5\textwidth} }
 Metric & Formula & Interpretation \\
 \hline
-MSE & \frac{1}{N} \lVert x - \hat{x} \rVert^2
+MSE
+& $\frac{1}{N} \lVert x - \hat{x} \rVert^2$
 & Mean squared error in units of standard deviations (features are
 standardised). Lower is better. \\
-MAE & \frac{1}{N} \sum_i \lvert x_i - \hat{x}_i \rvert
+MAE
+& $\frac{1}{N} \sum_i \lvert x_i - \hat{x}_i \rvert$
 & Mean absolute error; less sensitive to outliers than MSE. \\
-$R^2$ & 1 - \frac{\text{SS}_{\text{res}}}{\text{SS}_{\text{tot}}}
+$R^2$
+& $1 - \frac{\text{SS}_{\text{res}}}{\text{SS}_{\text{tot}}}$
 & Fraction of variance explained by the decoder.
 \end{tabular}
 \end{table}
@@ -416,7 +420,7 @@ neighbourhood-aware embedding.
 Node embeddings are evaluated for clustering quality using:
 
 \begin{itemize}
-\item Silhouette score $\in [−1, 1]$: measures cohesion within
+\item Silhouette score $\in [-1, 1]$: measures cohesion within
   clusters relative to separation between clusters. Values above
   $0.3$ indicate meaningful structure; above $0.5$ is strong. Computed
   on a random subsample of nodes ($\leq 10,000$) due to
@@ -441,19 +445,18 @@ generated graphs are sampled.
 %% ===================================================================
 %% -------------------------------------------------------------------
 
-\begin{table}
-\centering
-\begin{tabular}{ r p{0.5\textwidth} }
-k
+\begin{table}[H]
+\begin{tabular}{ r p{0.65\textwidth} }
+$k$
 & Number of nearest neighbours per node in kNN graph
 construction. Default: 5. Increase for denser graphs; decrease
 if the model overfits to local structure. \\
 
-hidden\_channels (H)
+hidden\_channels ($H$)
 & Dimensionality of the shared GCN hidden layer and the MLP feature
 decoder's hidden layer. Default: 64. \\
 
-latent\_dim (d)
+latent\_dim ($d$)
 & Dimensionality of the latent space. Default: 32. Increase if
 clustering results are indistinct; decreasing improves generation
 regularity. \\
@@ -465,7 +468,7 @@ loss\_beta ($\beta$)
 & Weight on the feature reconstruction MSE loss. Default: 1.0. \\
 
 loss\_gamma ($\gamma$)
-& Weight on the KL divergence term. Default: 1.0. Increasing γ
+& Weight on the KL divergence term. Default: 1.0. Increasing $\gamma$
 produces a more organised latent space at the cost of reconstruction
 fidelity. \\
 
@@ -497,9 +500,8 @@ test\_fraction
 %% ===================================================================
 %% -------------------------------------------------------------------
 
-\begin{table}
-\centering
-\begin{tabular}{ r p{0.5\textwidth} }
+\begin{table}[H]
+\begin{tabular}{ r p{0.65\textwidth} }
 \texttt{PyTorch}
 & Tensor operations, autograd, Adam optimiser \\
 \texttt{PyTorch Geometric}
