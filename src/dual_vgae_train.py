@@ -79,7 +79,7 @@ CONFIG = dict(
 
     # Training
     epochs          = 1200,
-    lr              = 1e-2,
+    lr              = 5e-3,
     val_fraction    = 0.05,
     test_fraction   = 0.05,
 
@@ -89,9 +89,9 @@ CONFIG = dict(
     #   alpha : weight on edge (adjacency) reconstruction BCE loss
     #   beta  : weight on feature reconstruction MSE loss
     #   gamma : weight on KL divergence term
-    loss_alpha = 0.67,
+    loss_alpha = 0.65,
     loss_beta  = 1.0,
-    loss_gamma = 1900.0,
+    loss_gamma = 1500.0,
     # The three weights alpha, beta, gamma are important to tune.
     # If MSE dominates (feature values are large), the model will
     # sacrifice edge structure to fit features, and vice versa. A good
